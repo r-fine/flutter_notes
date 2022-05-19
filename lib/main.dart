@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_notes/views/login_view.dart';
-import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_notes/firebase_options.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,41 +11,19 @@ void main() {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const LoginView(),
+      home: const HomePage(),
     ),
   );
 }
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({Key? key}) : super(key: key);
-
-  @override
-  State<RegisterView> createState() => _RegisterViewState();
-}
-
-class _RegisterViewState extends State<RegisterView> {
-  late final TextEditingController _email;
-  late final TextEditingController _password;
-
-  @override
-  void initState() {
-    _email = TextEditingController();
-    _password = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('Home'),
       ),
       body: FutureBuilder(
         future: Firebase.initializeApp(
@@ -55,53 +32,13 @@ class _RegisterViewState extends State<RegisterView> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              return Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _email,
-                      autocorrect: false,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter youe email',
-                      ),
-                    ),
-                    TextField(
-                      controller: _password,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter your password',
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        final email = _email.text;
-                        final password = _password.text;
-                        try {
-                          final UserCredential = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                            email: email,
-                            password: password,
-                          );
-                          print(UserCredential);
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'weak-password') {
-                            print('Weak password');
-                          } else if (e.code == 'email-already-in-use') {
-                            print('Email is already in use');
-                          } else if (e.code == 'invalid-email') {
-                            print('Invalid email entered');
-                          }
-                        }
-                      },
-                      child: const Text('Register'),
-                    ),
-                  ],
-                ),
-              );
+              final user = FirebaseAuth.instance.currentUser;
+              if (user?.emailVerified ?? false) {
+                print('You are a verified user');
+              } else {
+                print('You need to verify your email first');
+              }
+              return const Text('Done');
             default:
               return const Text('Loading...');
           }
