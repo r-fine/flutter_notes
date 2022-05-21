@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_notes/firebase_options.dart';
-import 'package:flutter_notes/views/login_view.dart';
-import 'package:flutter_notes/views/register_view.dart';
-import 'package:flutter_notes/views/verify_email_view.dart';
+
+import '../constants/routes.dart';
+import '../firebase_options.dart';
+import '../views/login_view.dart';
+import '../views/register_view.dart';
+import '../views/verify_email_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,8 +18,10 @@ void main() {
       ),
       home: const HomePage(),
       routes: {
-        '/login/': (context) => const LoginView(),
-        '/register/': (context) => const RegisterView(),
+        loginRoute: (context) => const LoginView(),
+        registerRoute: (context) => const RegisterView(),
+        notesRoute: (context) => const NotesView(),
+        verifyEmailRoute: (context) => const VerifyEmailView(),
       },
     ),
   );
@@ -77,7 +81,7 @@ class _NotesViewState extends State<NotesView> {
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/login/',
+                      loginRoute,
                       (_) => false,
                     );
                   }
@@ -94,7 +98,10 @@ class _NotesViewState extends State<NotesView> {
           )
         ],
       ),
-      body: const Text('Welcome to Flutter Notes'),
+      body: const Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Text('Welcome to Flutter Notes'),
+      ),
     );
   }
 }
